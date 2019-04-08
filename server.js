@@ -22,11 +22,26 @@ app.use(bodyParser.json());
 app.get('/api/', function (req, res) {
   return res.json({ message: 'hello' })
 });
+
+// Add a user to the database or update their information if their entry already exists
+app.post('/api/user', function (req, res, next) {
+  var id = req.body.id;
+  var name = req.body.name;
+
+  if (!id || !name) {
+    return res.status(400).json({ message: 'Missing information.' });
+  }
+
+  mc.query('INSERT INTO users (id, name) VALUES (?,?) ON DUPLICATE KEY UPDATE name=VALUES(name)', [id, name], function (error, results, fields) {
+    if (error) throw error;
+    return res.json({ data: results, message: 'User information stored successfully.' });
+  });
+});
  
 // Retrieve all shifts
 // Date is formatted like "Wednesday March 20 2019"
 app.get('/api/shifts', function (req, res) {
-  mc.query('SELECT id, createdAt, DATE_FORMAT(shiftDate, "%W %M %e %Y") AS shiftDate, shiftTime, postedBy, coveredBy, helpSession, majorPreference, yearPreference, comments FROM shifts', function (error, results, fields) {
+  mc.query('SELECT s.id, s.createdAt, DATE_FORMAT(s.shiftDate, "%W %M %e %Y") AS shiftDate, s.shiftTime, u.name AS postedBy, u.name AS coveredBy, s.helpSession, s.majorPreference, s.yearPreference, s.comments FROM shifts s, users u WHERE postedBy=u.id AND coveredBy=u.id', function (error, results, fields) {
     if (error) { throw error; }
     return res.json({ data: results });
   });
@@ -37,7 +52,7 @@ app.get('/api/shifts', function (req, res) {
 app.get('/api/shift/:id', function (req, res) {
   var shiftId = req.params.id;
 
-  mc.query('SELECT id, createdAt, DATE_FORMAT(shiftDate, "%W %M %e %Y") AS shiftDate, shiftTime, postedBy, coveredBy, helpSession, majorPreference, yearPreference, comments FROM shifts WHERE id=?', [shiftId], function (error, results, fields) {
+  mc.query('SELECT s.id, s.createdAt, DATE_FORMAT(s.shiftDate, "%W %M %e %Y") AS shiftDate, s.shiftTime, u.name AS postedBy, u.name AS coveredBy, s.helpSession, s.majorPreference, s.yearPreference, s.comments FROM shifts s, users u WHERE s.id=? AND postedBy=u.id AND coveredBy=u.id', [shiftId], function (error, results, fields) {
     if (error) throw error;
     return res.json({ data: results[0] });
   });

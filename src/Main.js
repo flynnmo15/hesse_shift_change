@@ -35,8 +35,10 @@ class Main extends Component {
         <div className="content">
           <Route exact path='/' component={Home} />
           <Route exact path="/listings" component={Listings} />
-          <Route exact path="/post" component={Post} />
-          <Route exact path="/shift/:id" component={Shift} />
+          <Route exact path="/post" 
+		 render={(props) => <Post {...props} googleId={this.props.googleId} />} />
+          <Route exact path="/shift/:id"
+		 render={(props) => <Shift {...props} googleId={this.props.googleId} />} />
         </div>
       </div>
     );

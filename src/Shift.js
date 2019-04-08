@@ -51,7 +51,7 @@ class Shift extends Component {
       },
       body: JSON.stringify({
         id: this.state.id,
-        coveredBy: "Covered!"
+        coveredBy: this.props.googleId
       })
     }).then(res => res.json())
       .then(response => this.submitSuccess())

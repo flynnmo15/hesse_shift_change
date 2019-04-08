@@ -27,6 +27,7 @@ class App extends Component {
 
     // Handle the Authentication Details
     // w3 = whole object file
+    // Eea = googleId
     // U3 = "email@valpo.edu"
     // ig = "first last"
     // ofa = "first"
@@ -37,6 +38,18 @@ class App extends Component {
                 isAuthenticated:true, 
                 user:response.w3
             })
+	    // put their name and id in the database
+  	    fetch('/api/user', {
+      	        method: 'post',
+      	        headers: {
+        	    'Accept': 'application/json, text/plain, */*',
+        	    'Content-Type': 'application/json'
+      		},
+      		body: JSON.stringify({
+        	    id: this.state.user.Eea,
+        	    name: this.state.user.ig
+      		})
+    	    }).then(res => res.json()).catch(error => alert('Error'));	    
         }
     };
 
@@ -46,6 +59,7 @@ class App extends Component {
                 (
                     // User has been logged in, display main web application
                     <Main 
+			googleId = {this.state.user.Eea}
                         email = {this.state.user.U3}
                         name = {this.state.user.ig}
                         logout = {this.logout}

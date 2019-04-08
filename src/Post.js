@@ -1,6 +1,7 @@
 // Imports
 import React, { Component } from "react";
 import { Redirect } from 'react-router';
+import { GoogleLogin } from 'react-google-login';
 import DayPicker from 'react-day-picker';
 import 'react-day-picker/lib/style.css';
 
@@ -14,7 +15,7 @@ class Post extends Component {
     this.state = {
       shiftDate: '',
       shiftTime: '',
-      postedBy: '',
+      postedBy: this.props.googleId,
       helpSession: 'No',
       majorPreference: 'None',
       yearPreference: 'None',
@@ -108,10 +109,6 @@ class Post extends Component {
 	    <option value="7:00 - 10:00 PM">7:00 - 10:00 PM</option>
 	  </select>
 	  <br />
-
-	  {/* Posted By (eventually we want to fill this in automatically based on who is logged in) */}
-	  <label htmlFor="postedBy">Posted By:</label>
-	  <input type="text" id="postedBy" name="postedBy" onChange={this.onChange} /> 
 
 	  {/* Help Session? */}
           <label htmlFor="helpSession">Is this a Help Session?:</label>
