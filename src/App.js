@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { GoogleLogin } from 'react-google-login';
 import config from './config.json';
-import { Route, Switch, Redirect } from 'react-router-dom'
+import 'react-router-dom'
 import Main from "./Main";
 
 
@@ -47,7 +47,8 @@ class App extends Component {
       		},
       		body: JSON.stringify({
         	    id: this.state.user.Eea,
-        	    name: this.state.user.ig
+        	    name: this.state.user.ig,
+		    email: this.state.user.U3
       		})
     	    }).then(res => res.json()).catch(error => alert('Error'));	    
         }

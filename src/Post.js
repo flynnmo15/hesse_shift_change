@@ -1,7 +1,7 @@
 // Imports
 import React, { Component } from "react";
 import { Redirect } from 'react-router';
-import { GoogleLogin } from 'react-google-login';
+import 'react-google-login';
 import DayPicker from 'react-day-picker';
 import 'react-day-picker/lib/style.css';
 

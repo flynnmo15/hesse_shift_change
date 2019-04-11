@@ -1,7 +1,7 @@
 // Imports
 import React, { Component } from "react";
 import { Route } from "react-router-dom"; // Needed for Route
-import { GoogleLogin } from 'react-google-login';
+import 'react-google-login';
 // Component Imports
 import PageHeader from "./PageHeader";
 import Navigation from "./Navigation";
@@ -33,7 +33,8 @@ class Main extends Component {
 
         {/* Contains the Body of the Website, actual page content */}
         <div className="content">
-          <Route exact path='/' component={Home} />
+          <Route exact path='/'
+	         render={(props) => <Home {...props} googleId={this.props.googleId} />} />
           <Route exact path="/listings" component={Listings} />
           <Route exact path="/post" 
 		 render={(props) => <Post {...props} googleId={this.props.googleId} />} />

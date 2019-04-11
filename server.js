@@ -27,12 +27,13 @@ app.get('/api/', function (req, res) {
 app.post('/api/user', function (req, res, next) {
   var id = req.body.id;
   var name = req.body.name;
+  var email = req.body.email;
 
   if (!id || !name) {
     return res.status(400).json({ message: 'Missing information.' });
   }
 
-  mc.query('INSERT INTO users (id, name) VALUES (?,?) ON DUPLICATE KEY UPDATE name=VALUES(name)', [id, name], function (error, results, fields) {
+  mc.query('INSERT INTO users (id, name, email) VALUES (?,?,?) ON DUPLICATE KEY UPDATE name=VALUES(name)', [id, name, email], function (error, results, fields) {
     if (error) throw error;
     return res.json({ data: results, message: 'User information stored successfully.' });
   });
@@ -41,7 +42,27 @@ app.post('/api/user', function (req, res, next) {
 // Retrieve all shifts
 // Date is formatted like "Wednesday March 20 2019"
 app.get('/api/shifts', function (req, res) {
-  mc.query('SELECT s.id, s.createdAt, DATE_FORMAT(s.shiftDate, "%W %M %e %Y") AS shiftDate, s.shiftTime, u.name AS postedBy, u.name AS coveredBy, s.helpSession, s.majorPreference, s.yearPreference, s.comments FROM shifts s, users u WHERE postedBy=u.id AND coveredBy=u.id', function (error, results, fields) {
+  mc.query('SELECT s.id, s.createdAt, DATE_FORMAT(s.shiftDate, "%W %M %e %Y") AS shiftDate, s.shiftTime, up.name AS postedBy, uc.name AS coveredBy, s.helpSession, s.majorPreference, s.yearPreference, s.comments FROM shifts s LEFT JOIN users up ON up.id=s.postedBy LEFT JOIN users uc ON uc.id=s.coveredBy', function (error, results, fields) {
+    if (error) { throw error; }
+    return res.json({ data: results });
+  });
+});
+
+// Retrieve shifts posted by user
+app.get('/api/postedShifts/:id', function (req, res) {
+  var id = req.params.id;
+
+  mc.query('SELECT s.id, s.createdAt, DATE_FORMAT(s.shiftDate, "%W %M %e %Y") AS shiftDate, s.shiftTime, up.name AS postedBy, uc.name AS coveredBy, s.helpSession, s.majorPreference, s.yearPreference, s.comments FROM shifts s LEFT JOIN users up ON up.id=s.postedBy LEFT JOIN users uc ON uc.id=s.coveredBy WHERE up.id=?', [id], function (error, results, fields) {
+    if (error) { throw error; }
+    return res.json({ data: results });
+  });
+});
+
+// Retrieve shifts covered by user
+app.get('/api/coveredShifts/:id', function (req, res) {
+  var id = req.params.id;
+
+  mc.query('SELECT s.id, s.createdAt, DATE_FORMAT(s.shiftDate, "%W %M %e %Y") AS shiftDate, s.shiftTime, up.name AS postedBy, uc.name AS coveredBy, s.helpSession, s.majorPreference, s.yearPreference, s.comments FROM shifts s LEFT JOIN users up ON up.id=s.postedBy LEFT JOIN users uc ON uc.id=s.coveredBy WHERE uc.id=?', [id], function (error, results, fields) {
     if (error) { throw error; }
     return res.json({ data: results });
   });
@@ -52,7 +73,7 @@ app.get('/api/shifts', function (req, res) {
 app.get('/api/shift/:id', function (req, res) {
   var shiftId = req.params.id;
 
-  mc.query('SELECT s.id, s.createdAt, DATE_FORMAT(s.shiftDate, "%W %M %e %Y") AS shiftDate, s.shiftTime, u.name AS postedBy, u.name AS coveredBy, s.helpSession, s.majorPreference, s.yearPreference, s.comments FROM shifts s, users u WHERE s.id=? AND postedBy=u.id AND coveredBy=u.id', [shiftId], function (error, results, fields) {
+  mc.query('SELECT s.id, s.createdAt, DATE_FORMAT(s.shiftDate, "%W %M %e %Y") AS shiftDate, s.shiftTime, up.name AS postedBy, uc.name AS coveredBy, s.helpSession, s.majorPreference, s.yearPreference, s.comments FROM shifts s LEFT JOIN users up ON up.id=s.postedBy LEFT JOIN users uc ON uc.id=s.coveredBy WHERE s.id=?', [shiftId], function (error, results, fields) {
     if (error) throw error;
     return res.json({ data: results[0] });
   });

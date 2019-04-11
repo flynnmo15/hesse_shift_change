@@ -11,19 +11,26 @@ class ShiftTable extends Component {
   // Data will be stored in this.state.data
   constructor(props) {
     super(props); 
-    this.state = { 
+    this.state = {
       data: [],
      }
   }
 
   // When the component is loaded, get the data
   componentDidMount() {
-    return fetch('/api/shifts')
+    // default, get everything
+    var fetchFrom = '/api/shifts';
+
+    // get specific shifts if necessary
+    if (this.props.type === "posted") { fetchFrom = '/api/postedShifts/' + this.props.googleId; }
+    else if (this.props.type === "covered") { fetchFrom = 'api/coveredShifts/' + this.props.googleId; }
+
+    return fetch(fetchFrom)
       .then((response) => response.json())
       .then((responseJson) => {
         this.setState({
           data: responseJson.data
-        });
+      });
     })
   }
 
@@ -39,7 +46,6 @@ class ShiftTable extends Component {
               <th>Covered By</th>
             </tr>
           </thead>
-	  {/* Right now this just displays every entry in the database */}
           <tbody>
             {
               this.state.data.map(function(shift) {
