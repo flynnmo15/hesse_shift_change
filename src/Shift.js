@@ -35,6 +35,13 @@ class Shift extends Component {
     })
   }
 
+  deleteSuccess = () => {
+    alert('Deleted!');
+    this.setState({
+      redirect: true
+    })
+  }
+
   renderRedirect = () => {
     if (this.state.redirect) {
       return <Redirect to='/' />
@@ -56,6 +63,23 @@ class Shift extends Component {
     }).then(res => res.json())
       .then(response => this.submitSuccess())
       .catch(error => alert('ERROR'));
+  }
+
+  /* Delete a shift */
+  deleteShift = (e) => {
+    fetch('/api/shift', {
+      method: 'DELETE',
+      headers: {
+        'Accept': 'application/json, text/plain, */*',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        id: this.state.id,
+        deletedBy: this.props.googleId
+      }) 
+    }).then(res => res.json())
+        .then(response => this.deleteSuccess())
+        .catch(error => alert('ERROR'));
   }
 
   render() {
@@ -99,6 +123,7 @@ class Shift extends Component {
           </tbody>
         </table>
         <div>
+	  <button type="button" onClick={this.deleteShift}>Delete this shift</button>
           <button type="button" onClick={this.coverShift}>Cover this shift</button>
         </div>
       </div>

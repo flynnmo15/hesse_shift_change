@@ -54,7 +54,7 @@ class ShiftTable extends Component {
 			 <td>{shift.shiftTime}</td>
 			 <td>{shift.postedBy}</td>
 			 <td>{shift.coveredBy}</td>
-			 <td><NavLink to={`/shift/${shift.id}`} className={`ShiftTable ${css(styles.button)}`}>Claim</NavLink></td>
+			 <td><NavLink to={`/shift/${shift.id}`} className={`ShiftTable ${css(styles.button)}`}>View</NavLink></td>
 		       </tr>;
               })
             }
