@@ -23,6 +23,10 @@ app.get('/api/', function (req, res) {
   return res.json({ message: 'hello' })
 });
 
+
+
+/********** USERS **********/
+
 // Add a user to the database, or update their information if their entry already exists
 // should be called right when someone logs in
 app.post('/api/user', function (req, res, next) {
@@ -48,6 +52,10 @@ app.post('/api/user', function (req, res, next) {
   });
 
 });
+
+
+
+/********** SHIFTS **********/
  
 // Retrieve all shifts for the listings page
 // Date is formatted like "Wednesday March 20 2019"
@@ -266,6 +274,143 @@ app.delete('/api/shift', function (req, res) {
   });
 
 });
+
+
+
+/********** POINTS **********/
+
+// Get the points scoreboard
+app.get('/api/points', function (req, res) {
+
+  // set up the query
+  var query = `SELECT id,
+                      name,
+                      points
+               FROM users
+               ORDER BY name`;
+               
+  // run the query
+  mc.query(query, function (error, results, fields) {
+    if (error) { throw error; }
+    return res.json({ data: results });
+  });
+
+});
+
+// Add a point
+app.put('/api/addPoint', function (req, res) {
+  
+  var adding = req.body.adding;
+  var addTo = req.body.addTo;
+
+  // check for required fields
+  if (!adding || !addTo) {
+    return res.status(400).json({ message: 'Missing information.' });
+  }
+
+  // check that user altering points is admin
+  // done pretty much the same way as delete check
+  var hasPermission = false;
+
+  function checkPermission(callback) {
+
+    var permissionQuery = `SELECT id
+                           FROM users
+                           WHERE admin=1 AND id=?`;
+
+    // run the query
+    mc.query(permissionQuery, [adding], function (error, results, fields) {
+      if (error) throw error;
+      return callback(results);
+    });
+
+  }
+  
+  checkPermission(function(result) {
+  
+    // if the query returned something that means they have permission
+    if (result.length > 0) {
+      hasPermission = true;
+    }
+
+    if (hasPermission) {
+
+      // give the specified user a point
+      // set up the query
+      var query = `UPDATE users
+                   SET points = points + 1
+                   WHERE id=?`;
+
+      // run the query
+      mc.query(query, [addTo], function (error, results, fields) {
+        if (error) throw error;
+        return res.json({ data: results, message: 'Point added successfully.' });
+      });
+
+    } else {
+      return res.status(403).json({ message: 'You do not have permission to do that!' });
+    }
+
+  });
+});
+
+// Remove a point
+app.put('/api/subtractPoint', function (req, res) {
+
+  var subtracting = req.body.subtracting;
+  var subtractFrom = req.body.subtractFrom;
+
+  // check for required fields
+  if (!subtracting || !subtractFrom) {
+    return res.status(400).json({ message: 'Missing information.' });
+  }
+
+  // check that user altering points is admin
+  // done pretty much the same way as delete check
+  var hasPermission = false;
+
+  function checkPermission(callback) {
+
+    var permissionQuery = `SELECT id
+                           FROM users
+                           WHERE admin=1 AND id=?`;
+
+    // run the query
+    mc.query(permissionQuery, [subtracting], function (error, results, fields) {
+      if (error) throw error;
+      return callback(results);
+    });
+
+  }
+
+  checkPermission(function(result) {
+
+    // if the query returned something that means they have permission
+    if (result.length > 0) {
+      hasPermission = true;
+    }
+
+    if (hasPermission) {
+
+      // take a point away from the specified
+      // set up the query
+      var query = `UPDATE users
+                   SET points = points - 1
+                   WHERE id=?`;
+
+      // run the query
+      mc.query(query, [subtractFrom], function (error, results, fields) {
+        if (error) throw error;
+        return res.json({ data: results, message: 'Point subtracted successfully.' });
+      });
+
+    } else {
+      return res.status(403).json({ message: 'You do not have permission to do that!' });
+    }
+
+  });
+});
+
 
 // Listen
 const port = process.env.PORT || 3001;

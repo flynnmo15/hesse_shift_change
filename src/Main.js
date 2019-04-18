@@ -9,6 +9,7 @@ import Home from "./Home";
 import Listings from "./Listings";
 import Post from "./Post";
 import Shift from "./Shift"; 
+import Points from "./Points";
 
 // Main Component for App
 // Contains the Page Header
@@ -38,6 +39,8 @@ class Main extends Component {
           <Route exact path="/listings" component={Listings} />
           <Route exact path="/post" 
 		 render={(props) => <Post {...props} googleId={this.props.googleId} />} />
+	  <Route exact path="/points" 
+                 render={(props) => <Points {...props} googleId={this.props.googleId} />} />
           <Route exact path="/shift/:id"
 		 render={(props) => <Shift {...props} googleId={this.props.googleId} />} />
         </div>
