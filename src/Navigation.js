@@ -12,6 +12,7 @@ class Navigation extends Component {
             <li><NavLink to="/">Home</NavLink></li>
             <li><NavLink to="/listings">Listings</NavLink></li>
             <li><NavLink to="/post">Post</NavLink></li>
+	    <li><NavLink to="/points">Points</NavLink></li>
         </ul> 
       </div>
     );
