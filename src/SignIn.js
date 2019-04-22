@@ -1,6 +1,5 @@
 // Imports
 import React, { Component } from "react";
-import { Route } from "react-router-dom"; // Needed for Route
 import GoogleLogin from 'react-google-login';
 // Component Imports
 import PageHeader from "./PageHeader";

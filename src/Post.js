@@ -55,24 +55,29 @@ class Post extends Component {
   /* Submit the form */
   onSubmit = (e) => {
     e.preventDefault();
-    fetch('/api/shift', {
-      method: 'post',
-      headers: {
-        'Accept': 'application/json, text/plain, */*',
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        shiftDate: this.state.shiftDate,
-        shiftTime: this.state.shiftTime,
-        postedBy: this.state.postedBy,
-        helpSession: this.state.helpSession,
-        majorPreference: this.state.majorPreference,
-        yearPreference: this.state.yearPreference,
-        comments: this.state.comments,
-      })
-    }).then(res => res.json())
-      .then(response => this.submitSuccess())
-      .catch(error => alert('ERROR: The form was not submitted.'));
+
+    if(!(this.state.shiftDate && this.state.shiftTime)) {
+      alert('ERROR: Date and Time Required');
+    } else {
+      fetch('/api/shift', {
+        method: 'post',
+        headers: {
+          'Accept': 'application/json, text/plain, */*',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          shiftDate: this.state.shiftDate,
+          shiftTime: this.state.shiftTime,
+          postedBy: this.state.postedBy,
+          helpSession: this.state.helpSession,
+          majorPreference: this.state.majorPreference,
+          yearPreference: this.state.yearPreference,
+          comments: this.state.comments,
+        })
+      }).then(res => res.json())
+        .then(response => this.submitSuccess())
+        .catch(error => alert('ERROR: The form was not submitted.'));
+    }
   }
 
   render() {
@@ -87,14 +92,14 @@ class Post extends Component {
 	          onDayClick={this.handleDayClick}
           />
           <p>
-            <label>Date of Shift: </label>
+            <label>Date of Shift (required): </label>
             {this.state.shiftDate
 	            ? this.state.shiftDate.toLocaleDateString()
 	            : 'Please select a day.'}
 	        </p>
           <div className={`${css(styles.selects)}`}>
             {/* Time of Shift */}
-            <label htmlFor="shiftTime">Time of Shift:</label><br />
+            <label htmlFor="shiftTime">Time of Shift (required):</label><br />
             <select id="shiftTime" name="shiftTime" onChange={this.onChange} className={`${css(styles.dropDown)}`}>
               <option value="Select time">Select time</option>
               <option value="10:25 - 11:25 AM">10:25 - 11:25 AM</option>
