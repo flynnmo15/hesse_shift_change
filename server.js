@@ -196,14 +196,16 @@ app.put('/api/shift', function (req, res) {
   if (!shiftId || !coveredBy) { 
     return res.status(400).json({ message: 'Missing information.' });
   }
-  
+ 
+  // first cover the shift 
   // set up the query
-  var query = `UPDATE shifts 
-               SET coveredBy=? 
-               WHERE id=?`;
+  var query = `UPDATE shifts, users
+               SET shifts.coveredBy=?,
+                   users.points = points + 1 
+               WHERE shifts.id=? AND users.id=?`;
 
   // run the query 
-  mc.query(query, [coveredBy, shiftId], function (error, results, fields) {
+  mc.query(query, [coveredBy, shiftId, coveredBy], function (error, results, fields) {
     if (error) throw error;
     return res.json({ data: results, message: 'Shift has been updated successfully.' });
   });
