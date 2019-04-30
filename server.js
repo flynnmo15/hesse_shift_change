@@ -5,7 +5,7 @@ const bodyParser = require('body-parser');
  
 // Connection configurations
 const mc = mysql.createConnection({
-  host: 'cs358.cis.valpo.edu',
+  host: 'vas.cis.valpo.edu',
   user: 'hesse',
   password: '358hesse',
   database: 'hesse'
@@ -202,7 +202,7 @@ app.put('/api/shift', function (req, res) {
   var query = `UPDATE shifts, users
                SET shifts.coveredBy=?,
                    users.points = points + 1 
-               WHERE shifts.id=? AND users.id=?`;
+               WHERE shifts.id=? AND users.id=? AND shifts.coveredBy IS NULL`;
 
   // run the query 
   mc.query(query, [coveredBy, shiftId, coveredBy], function (error, results, fields) {

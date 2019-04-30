@@ -124,7 +124,9 @@ class Shift extends Component {
         </table>
         <div>
 	  <button type="button" onClick={this.deleteShift}>Delete this shift</button>
-          <button type="button" onClick={this.coverShift}>Cover this shift</button>
+          { this.state.shift.coveredBy == null &&
+            <button type="button" onClick={this.coverShift}>Cover this shift</button>
+          }
         </div>
       </div>
     );
