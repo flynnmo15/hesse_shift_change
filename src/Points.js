@@ -27,6 +27,22 @@ class Points extends Component {
       })
   }
 
+  refreshData() {
+    var fetchFrom = '/api/points';
+    fetch(fetchFrom)
+      .then((response) => response.json())
+      .then((responseJson) => {
+        this.setState({
+          data: responseJson.data
+        });
+      })
+  }
+
+  submitSuccess = () => {
+    alert('Points updated!');
+    this.refreshData();
+  }
+
   /* Add point */
   addPoint = (e, id) => {
     fetch('/api/addPoint', {
