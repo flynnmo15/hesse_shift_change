@@ -11,11 +11,27 @@ class Points extends Component {
     super(props); 
     this.state = {
       data: [],
+      admin: "not admin"
      }
   }
 
   // When the component is loaded, get the data
   componentDidMount() {
+
+    // checking admin status to hide/show buttons
+    fetch('/api/admin', {
+      method: 'post',
+      headers: {
+        'Accept': 'application/json, text/plain, */*',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        id: this.props.googleId
+      })
+    }).then(res => res.json())
+      .then(response => this.setState({ admin: response.data }) )
+      .catch(error => alert('ERROR: Admin status not checked.'));
+
     var fetchFrom = '/api/points';
 
     return fetch(fetchFrom)
@@ -95,8 +111,12 @@ class Points extends Component {
                 return <tr key={people.id}>
 		         <td>{people.name}</td>
 			 <td>{people.points}</td>
-                         <td><button type="button" onClick={this.addPoint} value={people.id}>Add</button></td>
-                         <td><button type="button" onClick={this.subtractPoint} value={people.id}>Subtract</button></td>
+                         { this.state.admin !== "not admin" &&   
+                           <td><button type="button" onClick={this.addPoint} value={people.id}>Add</button></td>
+                         }
+                         { this.state.admin !== "not admin" && 
+                           <td><button type="button" onClick={this.subtractPoint} value={people.id}>Subtract</button></td>
+                         }
 		       </tr>;
               }, this)
             }

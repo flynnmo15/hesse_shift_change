@@ -53,6 +53,33 @@ app.post('/api/user', function (req, res, next) {
 
 });
 
+// check if given user is an admin
+// will return the user's name if they are an admin or "not admin" if not
+app.post('/api/admin', function (req, res, next) {
+
+  var id = req.body.id;
+
+  if (!id) {
+    return res.status(400).json({ message: 'Missing information' });
+  }
+
+  // set up the query
+  var query = `SELECT name
+               FROM users
+               WHERE id=? AND admin=1`;
+
+  // run the query
+  mc.query(query, [id], function (error, results, fields) {
+    if (error) throw error;
+    if (results.length > 0) {
+      return res.json({ data: results });
+    } else {
+      return res.json({ data:"not admin" });
+    }
+  });
+
+});
+
 
 
 /********** SHIFTS **********/
