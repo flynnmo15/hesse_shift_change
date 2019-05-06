@@ -14,11 +14,27 @@ class Shift extends Component {
       id: this.props.match.params.id,
       shift: [],
       redirect: false,
-    }
+      admin: "not admin"
+    };
   }
 
   // When the component is loaded, get the data
   componentDidMount() {
+
+    // checking admin status to hide/show buttons
+    fetch('/api/admin', {
+      method: 'post',
+      headers: {
+        'Accept': 'application/json, text/plain, */*',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        id: this.props.googleId
+      })
+    }).then(res => res.json())
+      .then(response => this.setState({ admin: response.data }) )
+      .catch(error => alert('ERROR: Admin status not checked.'));
+
     return fetch(`/api/shift/${this.state.id}`)
       .then((response) => response.json())
       .then((responseJson) => {
@@ -26,6 +42,7 @@ class Shift extends Component {
           shift: responseJson.data
         });
     })
+
   }
 
   submitSuccess = () => {
@@ -123,7 +140,9 @@ class Shift extends Component {
           </tbody>
         </table>
         <div>
-	  <button type="button" onClick={this.deleteShift}>Delete this shift</button>
+          { this.state.admin !== "not admin" &&
+	    <button type="button" onClick={this.deleteShift}>Delete this shift</button>
+          }
           { this.state.shift.coveredBy == null &&
             <button type="button" onClick={this.coverShift}>Cover this shift</button>
           }
